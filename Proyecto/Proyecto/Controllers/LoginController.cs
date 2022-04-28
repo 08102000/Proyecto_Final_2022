@@ -9,12 +9,12 @@ using System.Security.Claims;
 
 namespace Proyecto.Controllers
 {
-    public class LoginControllers : Controller
+    public class LoginController : Controller
     {
         private readonly MySQLConfiguration _configuration;
         private IUsuarioRepositorio _usuarioRepositorio;
 
-        public LoginControllers(MySQLConfiguration configuration)
+        public LoginController(MySQLConfiguration configuration)
         {
             _configuration = configuration;
             _usuarioRepositorio = new UsuarioRepositorio(configuration.CadenaConexion);
@@ -29,7 +29,7 @@ namespace Proyecto.Controllers
                 bool usuarioValido = await _usuarioRepositorio.ValidaUsuario(login);
                 if (usuarioValido)
                 {
-                    Usuario usu = await _usuarioRepositorio.GetPorCodigo(login.CodigoUsuario);
+                    Usuario usu = await _usuarioRepositorio.GetPorCodigo(login.Codigo);
                     if (usu.EstaActivo)
                     {
                         rol = usu.Rol;
@@ -37,9 +37,9 @@ namespace Proyecto.Controllers
                         //Añadimos los claims Usuario y Rol para tenerlos disponibles en la Cookie
                         var claims = new[]
                         {
-                        new Claim(ClaimTypes.Name, usu.CodigoUsuario),
+                        new Claim(ClaimTypes.Name, usu.Codigo),
                         new Claim(ClaimTypes.Role, rol)
-                        };
+                    };
 
                         //Creamos el principal
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
